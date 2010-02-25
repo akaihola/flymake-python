@@ -975,7 +975,7 @@ Return its components if so, nil otherwise."
 		(if (string-match "^[iI]nfo" err-text)
 		    (setq err-type "i")))
 	    )
-	  (flymake-log 3 "parse line: file-idx=%s line-idx=%s file=%s line=%s text=%s" file-idx line-idx
+	  (flymake-log 3 "parse line: type=%s file-idx=%s line-idx=%s file=%s line=%s text=%s" err-type file-idx line-idx
 		       raw-file-name line-no err-text)
 	  (setq matched t)))
       (setq patterns (cdr patterns)))
