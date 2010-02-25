@@ -214,6 +214,37 @@ class Pep8Runner(LintRunner):
         return '--repeat', '--ignore=' + ','.join(self.config.IGNORE_CODES)
 
 
+class TestRunner(LintRunner):
+    """ Run unit tests, producing flymake readable output."""
+
+    @property
+    def command(self):
+        return self.config.TEST_RUNNER_COMMAND
+
+    output_matcher = re.compile(
+        r'(?P<filename>[^:]+):'
+        r'(?P<line_number>[^:]+): '
+        r'In (?P<function>[^:]+): '
+        r'(?P<error_number>[^:]+): '
+        r'(?P<description>.+)$')
+
+    LEVELS = {'fail': 'error'}
+
+    @staticmethod
+    def fixup_data(data):
+        data['level'] = TestRunner.LEVELS.get(data['error_number'], 'warning')
+
+        return data
+
+    @property
+    def stream(self):
+        return self.config.TEST_RUNNER_OUTPUT
+
+    @property
+    def run_flags(self):
+        return self.config.TEST_RUNNER_FLAGS
+
+
 def find_config(path, trigger_type):
     if path in ('', '/'):
         module = None
@@ -231,6 +262,9 @@ def find_config(path, trigger_type):
 
 DEFAULT_CONFIG = dict(
     VIRTUALENV=None,
+    TEST_RUNNER_COMMAND=None,
+    TEST_RUNNER_FLAGS=[],
+    TEST_RUNNER_OUTPUT='stderr',
     ENV={},
     PYLINT=True,
     PYCHECKER=False,
@@ -276,6 +310,10 @@ def main():
         if value is not None:
             setattr(config, option.upper(), value)
     config.IGNORE_CODES = set(config.IGNORE_CODES)
+
+    if config.TEST_RUNNER_COMMAND:
+        tests = TestRunner(config)
+        tests.run(args[0])
 
     def run(runner_class):
         runner = runner_class(config)
