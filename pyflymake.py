@@ -4,8 +4,8 @@
 import os
 import re
 import sys
+import imp
 import logging
-
 
 from subprocess import Popen, PIPE
 
@@ -22,25 +22,24 @@ class LintRunner(object):
     output_format = "%(level)s %(tool)s/%(error_type)s%(error_number)s:" \
                     "%(description)s at %(filename)s line %(line_number)s."
 
-    def __init__(self, virtualenv=None, ignore_codes=(),
-                 use_sane_defaults=True):
-        if virtualenv:
+    def __init__(self, config):
+        self.config = config
+        if self.config.VIRTUALENV:
             # This is the least we can get away with (hopefully).
-            self.env = {'VIRTUAL_ENV': virtualenv,
-                        'PATH': virtualenv + '/bin:' + os.environ['PATH']}
+            self.env = {
+                'VIRTUAL_ENV': self.config.VIRTUALENV,
+                'PATH': self.config.VIRTUALENV + '/bin:' + os.environ['PATH']}
         else:
-            self.env = None
+            self.env = {}
 
-        self.virtualenv = virtualenv
-        self.ignore_codes = set(ignore_codes)
-        self.use_sane_defaults = use_sane_defaults
+        self.env.update(self.config.ENV)
 
     @property
     def operative_ignore_codes(self):
-        if self.use_sane_defaults:
-            return self.ignore_codes ^ self.sane_default_ignore_codes
+        if self.config.USE_SANE_DEFAULTS:
+            return self.config.IGNORE_CODES ^ self.sane_default_ignore_codes
         else:
-            return self.ignore_codes
+            return self.config.IGNORE_CODES
 
     @property
     def run_flags(self):
@@ -188,7 +187,33 @@ class Pep8Runner(LintRunner):
 
     @property
     def run_flags(self):
-        return '--repeat', '--ignore=' + ','.join(self.ignore_codes)
+        return '--repeat', '--ignore=' + ','.join(self.config.IGNORE_CODES)
+
+
+def find_config(path, trigger_type):
+    if path in ('', '/'):
+        module = None
+    else:
+        try:
+            parent_dir = os.path.join(path, '.pyflymakerc')
+            # dirtiest trick ever:
+            __builtins__.TRIGGER_TYPE = trigger_type
+            module = imp.load_source('config', parent_dir)
+            del __builtins__.TRIGGER_TYPE
+        except IOError:
+            module = find_config(os.path.split(path)[0], trigger_type)
+    return module
+
+
+DEFAULT_CONFIG = dict(
+    VIRTUALENV=None,
+    ENV={},
+    PYLINT=True,
+    PYCHECKER=False,
+    PEP8=True,
+    IGNORE_CODES=(),
+    USE_SANE_DEFAULTS=True)
+
 
 def main():
     from optparse import OptionParser
@@ -199,7 +224,7 @@ def main():
                       help="virtualenv directory")
     parser.add_option("-i", "--ignore_codes",
                       dest="ignore_codes",
-                      default=(),
+                      default=None,
                       help="error codes to ignore")
     parser.add_option("-d", "--debug",
                       action='store_true',
@@ -207,17 +232,32 @@ def main():
                       help="print debugging on stderr")
     options, args = parser.parse_args()
 
-    pylint = PylintRunner(virtualenv=options.virtualenv,
-                          ignore_codes=options.ignore_codes)
-    pylint.run(args[0])
-
     logging.basicConfig(
         level=options.debug and logging.DEBUG or logging.WARNING,
         format='%(levelname)-8s %(message)s')
 
-    pep8 = Pep8Runner(virtualenv=options.virtualenv,
-                      ignore_codes=options.ignore_codes)
-    pep8.run(args[0])
+    config = find_config(os.path.realpath(args[0]), options.trigger_type)
+    for key, value in DEFAULT_CONFIG.items():
+        if not hasattr(config, key):
+            setattr(config, key, value)
+
+    for option in 'virtualenv', 'ignore_codes':
+        value = getattr(options, option)
+        if value is not None:
+            setattr(config, option.upper(), value)
+    config.IGNORE_CODES = set(config.IGNORE_CODES)
+
+    def run(runner_class):
+        runner = runner_class(config)
+        runner.run(args[0])
+
+    if config.PYLINT:
+        run(PylintRunner)
+    if config.PYCHECKER:
+        run(PycheckerRunner)
+    if config.PEP8:
+        run(Pep8Runner)
+
     sys.exit()
 
 if __name__ == '__main__':
