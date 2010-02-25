@@ -35,8 +35,8 @@ Components
     a modified version of Pavel Kabyakov's ``flymake.el`` 0.3 which
     adds support for
 
-     * the 'info' message type in addition to 'error' and 'warning'
-     * passing the reason for running to external tools
+    * the 'info' message type in addition to 'error' and 'warning'
+    * passing the reason for running to external tools
 
 ``.emacs`` customization:
     in addition, a snippet of Emacs Lisp is needed in your ``~/.emacs``
