@@ -9,6 +9,8 @@ import logging
 
 from subprocess import Popen, PIPE
 
+MAX_DESCRIPTION_LENGTH = 60
+
 class LintRunner(object):
     """ Base class provides common functionality to run
           python code checkers. """
@@ -63,6 +65,11 @@ class LintRunner(object):
                                        '')
             fixed_data['tool'] = cls.__name__.split('Runner')[0].lower()
             fixed_data.update(cls.fixup_data(m.groupdict()))
+            if len(fixed_data['description']) > MAX_DESCRIPTION_LENGTH:
+                # truncate long descriptions
+                fixed_data['description'] = (
+                    '%s...' %
+                    fixed_data['description'][:MAX_DESCRIPTION_LENGTH - 3])
             print cls.output_format % fixed_data
 
     def run(self, filename):
