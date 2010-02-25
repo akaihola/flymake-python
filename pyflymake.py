@@ -143,7 +143,7 @@ class PycheckerRunner(LintRunner):
       render.py:49: Parameter (size) not used
       render.py:49: Parameter (zoom) not used """
 
-    command = 'pychecker'
+    command = 'python'
 
     output_matcher = re.compile(
         r'(?P<filename>[^:]+):'
@@ -158,7 +158,14 @@ class PycheckerRunner(LintRunner):
 
     @property
     def run_flags(self):
-        return '--no-deprecated', '-0186', '--only', '-#0'
+        return ('-c',
+                ('import sys;'
+                 'import pychecker.checker;'
+                 'pychecker.checker.main(sys.argv)'),
+                '--no-deprecated',
+                '-0186',
+                '--only',
+                '-#0')
 
 
 class PyflakesRunner(LintRunner):
