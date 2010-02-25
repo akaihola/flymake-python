@@ -12,11 +12,11 @@ Features
 
 The following external tools are supported:
 
- * pep8.py
- * PyChecker
- * PyLint
- * PyFlakes
- * nose
+* pep8.py
+* PyChecker
+* PyLint
+* PyFlakes
+* nose
 
 Python virtual environments are supported, but this is largely
 untested.
@@ -26,14 +26,12 @@ Components
 ==========
 
 ``pyflymake.py``:
-
     a script which runs external tools according to user's
     configuration and parses the output for ``flymake.el``.  The
     script is based on code copied from the Emacs Wiki on 2010-02-25.
     The original author is unknown.
 
 ``flymake.el``:
-
     a modified version of Pavel Kabyakov's ``flymake.el`` 0.3 which
     adds support for
 
@@ -41,17 +39,9 @@ Components
      * passing the reason for running to external tools
 
 ``.emacs`` customization:
-
     in addition, a snippet of Emacs Lisp is needed in your ``~/.emacs``
     file
 
-
-This script is based on the original script from:
- * http://www.emacswiki.org/emacs/PythonMode#toc7
- * http://www.emacswiki.org/emacs-en/PythonProgrammingInEmacs#toc5
- * http://python.pastebin.com/f627691e0
- * http://pastebin.ca/1797770
- * http://paste.uni.cc/20534
 
 Installation
 ============
@@ -61,15 +51,15 @@ Prerequisites
 
 Install or make sure you have installed:
 
- * Emacs (tested on 23.1.50.1)
- * Python (tested on 2.6.4)
- * the following Python packages:
+* Emacs (tested on 23.1.50.1)
+* Python (tested on 2.6.4)
+* the following Python packages:
 
-   * pep8
-   * pychecker
-   * pylint
-   * nose
-   * nose_machineout (from http://bitbucket.org/akaihola/nose_machineout/)
+  * pep8
+  * pychecker
+  * pylint
+  * nose
+  * nose_machineout (from http://bitbucket.org/akaihola/nose_machineout/)
 
 Files to install
 ----------------
@@ -154,13 +144,13 @@ List of configuration options
 ``USE_SANE_DEFAULTS`` (default: ``True``)
     ignore the following error codes in PyLint: 
 
-     * ``C0103`` Naming convention
-     * ``C0111`` Missing Docstring
-     * ``E1002`` Use super on old-style class
-     * ``W0232`` No ``__init__``
-     * ``R0904`` Too many public methods
-     * ``R0903`` Too few public methods
-     * ``R0201`` Method could be a function
+    * ``C0103`` Naming convention
+    * ``C0111`` Missing Docstring
+    * ``E1002`` Use super on old-style class
+    * ``W0232`` No ``__init__``
+    * ``R0904`` Too many public methods
+    * ``R0903`` Too few public methods
+    * ``R0201`` Method could be a function
 
 Enabling a unit test runner
 ---------------------------
@@ -201,10 +191,10 @@ You can specify custom configurations depending on why the checks are
 being run.  Different triggers for ``flymake.el`` to run the checks
 are:
 
- * ``open``: ``flymake.el`` was activated for the buffer
- * ``edit``: the buffer was edited more than .5 seconds ago
- * ``save``: the buffer was saved
- * ``force``: ``M-x flymake-start-syntax-check`` was executed manually
+* ``open``: ``flymake.el`` was activated for the buffer
+* ``edit``: the buffer was edited more than .5 seconds ago
+* ``save``: the buffer was saved
+* ``force``: ``M-x flymake-start-syntax-check`` was executed manually
 
 Here's an example configuration::
 
