@@ -17,7 +17,7 @@ class LintRunner(object):
 
     #flymake: ("\\(.*\\) at \\([^ \n]+\\) line \\([0-9]+\\)[,.\n]" 2 3 nil 1)
     #or in non-retardate: r'(.*) at ([^ \n]) line ([0-9])[,.\n]'
-    output_format = "%(level)s %(error_type)s%(error_number)s:" \
+    output_format = "%(level)s %(tool)s/%(error_type)s%(error_number)s:" \
                     "%(description)s at %(filename)s line %(line_number)s."
 
     def __init__(self, virtualenv=None, ignore_codes=(),
@@ -56,6 +56,7 @@ class LintRunner(object):
                                         'error_number', 'description',
                                         'filename', 'line_number'),
                                        '')
+            fixed_data['tool'] = cls.__name__.split('Runner')[0].lower()
             fixed_data.update(cls.fixup_data(line, m.groupdict()))
             print cls.output_format % fixed_data
 
