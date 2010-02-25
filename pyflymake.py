@@ -114,12 +114,12 @@ class PylintRunner(LintRunner):
         "R0201",  # Method could be a function
         ])
 
+    fixup_map = {'E': 'error', 'C': 'info', None: 'warning'}
+
     @staticmethod
     def fixup_data(data):
-        if data['error_type'].startswith('E'):
-            data['level'] = 'ERROR'
-        else:
-            data['level'] = 'WARNING'
+        fixup_map = PylintRunner.fixup_map
+        data['level'] = fixup_map.get(data['error_type'][0], fixup_map[None])
         return data
 
     @property
@@ -148,7 +148,7 @@ class PycheckerRunner(LintRunner):
     @staticmethod
     def fixup_data(data):
         #XXX: doesn't seem to give the level
-        data['level'] = 'WARNING'
+        data['level'] = 'warning'
         return data
 
     @property
@@ -179,9 +179,9 @@ class Pep8Runner(LintRunner):
     @staticmethod
     def fixup_data(data):
         if 'W' in data['error_number']:
-            data['level'] = 'WARNING'
+            data['level'] = 'info'
         else:
-            data['level'] = 'ERROR'
+            data['level'] = 'info'
 
         return data
 
