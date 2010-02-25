@@ -175,7 +175,7 @@ class Pep8Runner(LintRunner):
     def run_flags(self):
         return '--repeat', '--ignore=' + ','.join(self.ignore_codes)
 
-if __name__ == '__main__':
+def main():
     from optparse import OptionParser
     parser = OptionParser()
     parser.add_option("-e", "--virtualenv",
@@ -200,3 +200,6 @@ if __name__ == '__main__':
                       ignore_codes=options.ignore_codes)
     pep8.run(args[0])
     sys.exit()
+
+if __name__ == '__main__':
+    main()
