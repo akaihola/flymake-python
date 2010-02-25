@@ -155,6 +155,30 @@ class PycheckerRunner(LintRunner):
     def run_flags(self):
         return '--no-deprecated', '-0186', '--only', '-#0'
 
+
+class PyflakesRunner(LintRunner):
+    command = 'python'
+
+    output_matcher = re.compile(
+        r'(?P<filename>[^:]+):'
+        r'(?P<line_number>\d+):'
+        r'\s+(?P<description>.*)$')
+
+    @staticmethod
+    def fixup_data(data):
+        #XXX: doesn't seem to give the level
+        data['error_type'] = 'W'
+        data['level'] = 'warning'
+        return data
+
+    @property
+    def run_flags(self):
+        return ('-c',
+                ('import sys;'
+                 'from pyflakes.scripts import pyflakes;'
+                 'pyflakes.main()'))
+
+
 class Pep8Runner(LintRunner):
     """ Run pep8.py, producing flymake readable output.
 
@@ -211,6 +235,7 @@ DEFAULT_CONFIG = dict(
     PYLINT=True,
     PYCHECKER=False,
     PEP8=True,
+    PYFLAKES=True,
     IGNORE_CODES=(),
     USE_SANE_DEFAULTS=True)
 
@@ -257,6 +282,8 @@ def main():
         run(PycheckerRunner)
     if config.PEP8:
         run(Pep8Runner)
+    if config.PYFLAKES:
+        run(PyflakesRunner)
 
     sys.exit()
 
