@@ -48,6 +48,10 @@ class LintRunner(object):
     def fixup_data(cls, line, data):
         return data
 
+    @property
+    def stream(self):
+        return 'stdout'
+
     @classmethod
     def process_output(cls, line):
         m = cls.output_matcher.match(line)
@@ -67,7 +71,7 @@ class LintRunner(object):
 
         process = Popen(args, stdout=PIPE, stderr=PIPE, env=self.env)
 
-        for line in process.stdout:
+        for line in getattr(process, self.stream):
             self.process_output(line)
 
 class PylintRunner(LintRunner):
