@@ -100,7 +100,8 @@ class PylintRunner(LintRunner):
         r'\s*(?P<context>[^\]]+)\]'
         r'\s*(?P<description>.*)$')
 
-    command = 'pylint'
+    command = 'python'
+
     sane_default_ignore_codes = set([
         "C0103",  # Naming convention
         "C0111",  # Missing Docstring
@@ -125,10 +126,13 @@ class PylintRunner(LintRunner):
 
     @property
     def run_flags(self):
-        return ('--output-format', 'parseable',
+        return ('-c',
+                'import sys,pylint.lint;pylint.lint.Run(sys.argv[1:])',
+                '--output-format', 'parseable',
                 '--include-ids', 'y',
                 '--reports', 'n',
                 '--disable-msg=' + ','.join(self.operative_ignore_codes))
+
 
 class PycheckerRunner(LintRunner):
     """ Run pychecker, producing flymake readable output.
