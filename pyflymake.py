@@ -45,8 +45,8 @@ class LintRunner(object):
     def run_flags(self):
         return ()
 
-    @classmethod
-    def fixup_data(cls, line, data):
+    @staticmethod
+    def fixup_data(data):
         return data
 
     @property
@@ -62,7 +62,7 @@ class LintRunner(object):
                                         'filename', 'line_number'),
                                        '')
             fixed_data['tool'] = cls.__name__.split('Runner')[0].lower()
-            fixed_data.update(cls.fixup_data(line, m.groupdict()))
+            fixed_data.update(cls.fixup_data(m.groupdict()))
             print cls.output_format % fixed_data
 
     def run(self, filename):
@@ -114,8 +114,8 @@ class PylintRunner(LintRunner):
         "R0201",  # Method could be a function
         ])
 
-    @classmethod
-    def fixup_data(cls, line, data):
+    @staticmethod
+    def fixup_data(data):
         if data['error_type'].startswith('E'):
             data['level'] = 'ERROR'
         else:
@@ -145,8 +145,8 @@ class PycheckerRunner(LintRunner):
         r'(?P<line_number>\d+):'
         r'\s+(?P<description>.*)$')
 
-    @classmethod
-    def fixup_data(cls, line, data):
+    @staticmethod
+    def fixup_data(data):
         #XXX: doesn't seem to give the level
         data['level'] = 'WARNING'
         return data
@@ -176,8 +176,8 @@ class Pep8Runner(LintRunner):
         r' (?P<error_number>\w+) '
         r'(?P<description>.+)$')
 
-    @classmethod
-    def fixup_data(cls, line, data):
+    @staticmethod
+    def fixup_data(data):
         if 'W' in data['error_number']:
             data['level'] = 'WARNING'
         else:
