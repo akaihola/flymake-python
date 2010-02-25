@@ -4,6 +4,8 @@
 import os
 import re
 import sys
+import logging
+
 
 from subprocess import Popen, PIPE
 
@@ -69,10 +71,18 @@ class LintRunner(object):
         args.extend(self.run_flags)
         args.append(filename)
 
+        logging.debug(' '.join(args))
         process = Popen(args, stdout=PIPE, stderr=PIPE, env=self.env)
 
         for line in getattr(process, self.stream):
             self.process_output(line)
+
+        if logging.getLogger().isEnabledFor(logging.DEBUG):
+            other_stream = ('stdout', 'stderr')[self.stream == 'stdout']
+            for line in getattr(process, other_stream):
+                logging.debug('%s %s: %s',
+                              self.__class__.__name__, other_stream, line)
+
 
 class PylintRunner(LintRunner):
     """ Run pylint, producing flymake readable output.
@@ -191,15 +201,19 @@ def main():
                       dest="ignore_codes",
                       default=(),
                       help="error codes to ignore")
+    parser.add_option("-d", "--debug",
+                      action='store_true',
+                      dest="debug",
+                      help="print debugging on stderr")
     options, args = parser.parse_args()
 
     pylint = PylintRunner(virtualenv=options.virtualenv,
                           ignore_codes=options.ignore_codes)
     pylint.run(args[0])
 
-    pychecker = PycheckerRunner(virtualenv=options.virtualenv,
-                                ignore_codes=options.ignore_codes)
-    pychecker.run(args[0])
+    logging.basicConfig(
+        level=options.debug and logging.DEBUG or logging.WARNING,
+        format='%(levelname)-8s %(message)s')
 
     pep8 = Pep8Runner(virtualenv=options.virtualenv,
                       ignore_codes=options.ignore_codes)
