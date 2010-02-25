@@ -21,8 +21,8 @@ class LintRunner(object):
 
     #flymake: ("\\(.*\\) at \\([^ \n]+\\) line \\([0-9]+\\)[,.\n]" 2 3 nil 1)
     #or in non-retardate: r'(.*) at ([^ \n]) line ([0-9])[,.\n]'
-    output_format = "%(level)s %(tool)s/%(error_type)s%(error_number)s:" \
-                    "%(description)s at %(filename)s line %(line_number)s."
+    output_format = ("%(level)s %(tool)s/%(error_type)s%(error_number)s:"
+                     "%(description)s at %(filename)s line %(line_number)s.")
 
     def __init__(self, config):
         self.config = config
@@ -73,13 +73,13 @@ class LintRunner(object):
             print cls.output_format % fixed_data
 
     def run(self, filename):
-        args = [self.command]
-        args.extend(self.run_flags)
-        args.append(filename)
+        cmdline = [self.command]
+        cmdline.extend(self.run_flags)
+        cmdline.append(filename)
 
         env = dict(os.environ, **self.env)
-        logging.debug(' '.join(args))
-        process = Popen(args, stdout=PIPE, stderr=PIPE, env=env)
+        logging.debug(' '.join(cmdline))
+        process = Popen(cmdline, stdout=PIPE, stderr=PIPE, env=env)
 
         for line in getattr(process, self.stream):
             self.process_output(line)
@@ -119,7 +119,7 @@ class PylintRunner(LintRunner):
         #"W0511",  # FIXME/TODO
         #"W0142",  # *args or **kwargs magic.
         "R0904",  # Too many public methods
-        "R0903",  # Too few public methods        
+        "R0903",  # Too few public methods
         "R0201",  # Method could be a function
         ])
 
