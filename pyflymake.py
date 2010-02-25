@@ -200,7 +200,7 @@ class Pep8Runner(LintRunner):
       spiders/structs.py:25:33: W602 deprecated form of raising exception
       spiders/structs.py:51:9: E301 expected 1 blank line, found 0 """
 
-    command = 'pep8.py'
+    command = 'pep8'
     # sane_default_ignore_codes = set([
     #     'RW29', 'W391',
     #     'W291', 'WO232'])
