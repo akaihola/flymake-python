@@ -70,8 +70,9 @@ class LintRunner(object):
         args.extend(self.run_flags)
         args.append(filename)
 
+        env = dict(os.environ, **self.env)
         logging.debug(' '.join(args))
-        process = Popen(args, stdout=PIPE, stderr=PIPE, env=self.env)
+        process = Popen(args, stdout=PIPE, stderr=PIPE, env=env)
 
         for line in getattr(process, self.stream):
             self.process_output(line)
