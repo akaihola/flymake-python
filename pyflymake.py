@@ -247,6 +247,11 @@ def main():
                       dest="virtualenv",
                       default=None,
                       help="virtualenv directory")
+    parser.add_option("-t", "--trigger-type",
+                      dest="trigger_type",
+                      default=None,
+                      choices=('open', 'edit', 'save', 'force'),
+                      help="flymake trigger type")
     parser.add_option("-i", "--ignore_codes",
                       dest="ignore_codes",
                       default=None,
