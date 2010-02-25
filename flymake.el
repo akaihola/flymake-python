@@ -705,7 +705,7 @@ It's flymake process filter."
 
 (defun flymake-get-line-err-count (line-err-info-list type)
   "Return number of errors of specified TYPE.
-Value of TYPE is either \"e\" or \"w\"."
+Value of TYPE is \"e\", \"w\" or \"i\"."
   (let* ((idx        0)
 	 (count      (length line-err-info-list))
 	 (err-count  0))
@@ -802,6 +802,13 @@ Return t if it has at least one flymake overlay, nil if no overlay."
   "Face used for marking warning lines."
   :group 'flymake)
 
+(defface flymake-infoline
+  '((((class color) (background dark)) (:background "DarkGreen"))
+    (((class color) (background light)) (:background "LightGreen"))
+    (t (:bold t)))
+  "Face used for marking warning lines."
+  :group 'flymake)
+
 (defun flymake-highlight-line (line-no line-err-info-list)
   "Highlight line LINE-NO in current buffer.
 Perhaps use text from LINE-ERR-INFO-LIST to enhance highlighting."
@@ -837,7 +844,9 @@ Perhaps use text from LINE-ERR-INFO-LIST to enhance highlighting."
 
     (if (> (flymake-get-line-err-count line-err-info-list "e") 0)
 	(setq face 'flymake-errline)
-      (setq face 'flymake-warnline))
+      (if (> (flymake-get-line-err-count line-err-info-list "w") 0)
+	  (setq face 'flymake-warnline)
+	(setq face 'flymake-infoline)))
 
     (flymake-make-overlay beg end tooltip-text face nil)))
 
@@ -960,8 +969,11 @@ Return its components if so, nil otherwise."
 				  (match-string (nth 4 (car patterns)) line)
 				(flymake-patch-err-text (substring line (match-end 0)))))
 	  (or err-text (setq err-text "<no error text>"))
-	  (if (and err-text (string-match "^[wW]arning" err-text))
-	      (setq err-type "w")
+	  (if err-text
+	      (if (string-match "^[wW]arning" err-text)
+		  (setq err-type "w")
+		(if (string-match "^[iI]nfo" err-text)
+		    (setq err-type "i")))
 	    )
 	  (flymake-log 3 "parse line: file-idx=%s line-idx=%s file=%s line=%s text=%s" file-idx line-idx
 		       raw-file-name line-no err-text)
