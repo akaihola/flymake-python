@@ -6,8 +6,9 @@
 		       'flymake-create-temp-inplace))
 	   (local-file (file-relative-name
 			temp-file
-			(file-name-directory buffer-file-name))))
-      (list "~/.emacs.d/flymake/pyflymake.py" (list local-file))))
+			(file-name-directory buffer-file-name)))
+	   (options (when trigger-type (list "--trigger-type" trigger-type))))
+      (list "~/.emacs.d/flymake/pyflymake.py" (append options (list local-file)))))
 
   (add-to-list 'flymake-allowed-file-name-masks
 	       '("\\.py\\'" flymake-pylint-init)))
