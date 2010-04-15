@@ -68,7 +68,7 @@ Make sure that ``pep8``, ``pylint`` and ``pychecker`` are in your
 $PATH.
 
 Choose a directory for ``pyflymake.py`` (e.g. ``~/.emacs.d/``) and
-copy it there.
+copy it there.  Make sure the script is set as executable.
 
 Copy the provided version of ``flymake.el`` in a directory which is in the Emacs ``load-path``.  If another version of flymake is installed, make sure this directory precedes it.  Example: copy to ``~/.emacs.d/flymake.el`` and add this to your ``~/.emacs`` file::
 
