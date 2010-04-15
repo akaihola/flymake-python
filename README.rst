@@ -91,6 +91,15 @@ Add to your ``~/.emacs`` file (customize paths if necessary)::
           (list "~/.emacs.d/pyflymake.py" (list local-file))))
 	  ;;     check path
 
+      (add-to-list 'flymake-allowed-file-name-masks
+		   '("\\.py\\'" flymake-pylint-init)))
+
+If you'd like flymake to be activated automatically, add the following to
+``~/.emacs`` as well::
+
+    (add-hook 'find-file-hook 'flymake-find-file-hook)
+
+
 Configuration
 =============
 
