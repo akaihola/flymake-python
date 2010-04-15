@@ -208,7 +208,7 @@ are:
 Here's an example configuration::
 
     # run unit tests only when checks are forced or buffer saved
-    if TRIGGER_TYPE in 'save', 'force':
+    if TRIGGER_TYPE in ('save', 'force'):
         TEST_RUNNER_COMMAND = 'nosetests'
         TEST_RUNNER_FLAGS = [
             '--verbosity=0',
