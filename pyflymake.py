@@ -266,7 +266,7 @@ class TestRunner(LintRunner):
 
 def find_config(path, trigger_type):
     if path in ('', '/'):
-        module = None
+        module = DefaultConfig()
     else:
         try:
             parent_dir = os.path.join(path, '.pyflymakerc')
@@ -278,6 +278,20 @@ def find_config(path, trigger_type):
             module = find_config(os.path.split(path)[0], trigger_type)
     return module
 
+
+class DefaultConfig(object):
+    def __init__(self):
+        self.VIRTUALENV = None
+        self.TEST_RUNNER_COMMAND = None
+        self.TEST_RUNNER_FLAGS = []
+        self.TEST_RUNNER_OUTPUT = 'stderr'
+        self.ENV = {}
+        self.PYLINT = True
+        self.PYCHECKER = False
+        self.PEP8 = True
+        self.PYFLAKES = True
+        self.IGNORE_CODES = ()
+        self.USE_SANE_DEFAULTS = True
 
 DEFAULT_CONFIG = dict(
     VIRTUALENV=None,
