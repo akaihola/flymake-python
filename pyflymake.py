@@ -191,11 +191,15 @@ class PyflakesRunner(LintRunner):
         return data
 
     @property
+    def stream(self):
+        return 'stderr'
+
+    @property
     def run_flags(self):
         return ('-c',
                 ('import sys;'
                  'from pyflakes.scripts import pyflakes;'
-                 'pyflakes.main()'))
+                 'pyflakes.main(sys.argv[1:])'))
 
 
 class Pep8Runner(LintRunner):
