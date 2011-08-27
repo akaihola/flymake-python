@@ -101,7 +101,7 @@ class PylintRunner(LintRunner):
       render.py:32: [C0111, render] Missing docstring """
 
     output_matcher = re.compile(
-        r'(?P<filename>[^:]+):'
+        r'(?P<filename>.+):'
         r'(?P<line_number>\d+):'
         r'\s*\[(?P<error_type>[WECR])(?P<error_number>[^,]+),'
         r'\s*(?P<context>[^\]]+)\]'
@@ -153,7 +153,7 @@ class PycheckerRunner(LintRunner):
     command = 'python'
 
     output_matcher = re.compile(
-        r'(?P<filename>[^:]+):'
+        r'(?P<filename>.+):'
         r'(?P<line_number>\d+):'
         r'\s+(?P<description>.*)$')
 
@@ -179,7 +179,7 @@ class PyflakesRunner(LintRunner):
     command = 'python'
 
     output_matcher = re.compile(
-        r'(?P<filename>[^:]+):'
+        r'(?P<filename>.+):'
         r'(?P<line_number>\d+):'
         r'\s+(?P<description>.*)$')
 
@@ -245,7 +245,7 @@ class TestRunner(LintRunner):
         return self.config.TEST_RUNNER_COMMAND
 
     output_matcher = re.compile(
-        r'(?P<filename>[^:]+):'
+        r'(?P<filename>.+):'
         r'(?P<line_number>[^:]+): '
         r'In (?P<function>[^:]+): '
         r'(?P<error_number>[^:]+): '
