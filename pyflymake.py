@@ -217,7 +217,7 @@ class Pep8Runner(LintRunner):
     #     'W291', 'WO232'])
 
     output_matcher = re.compile(
-        r'(?P<filename>[^:]+):'
+        r'(?P<filename>.+):'
         r'(?P<line_number>[^:]+):'
         r'[^:]+:'
         r' (?P<error_number>\w+) '
