@@ -101,13 +101,12 @@ class PylintRunner(LintRunner):
       render.py:32: [C0111, render] Missing docstring """
 
     output_matcher = re.compile(
-        r'(?P<filename>.+):'
+        r'(?P<filename>[^:]+):'
         r'(?P<line_number>\d+):'
-        r'\s*\[(?P<error_type>[WECR])(?P<error_number>[^,]+),'
-        r'\s*(?P<context>[^\]]+)\]'
+        r'\s*\[(?P<error_type>[WECR])(?P<error_number>[^\]]+)]'
         r'\s*(?P<description>.*)$')
 
-    command = 'python'
+    command = 'pylint'
 
     sane_default_ignore_codes = set([
         "C0103",  # Naming convention
@@ -133,12 +132,10 @@ class PylintRunner(LintRunner):
 
     @property
     def run_flags(self):
-        return ('-c',
-                'import sys,pylint.lint;pylint.lint.Run(sys.argv[1:])',
-                '--output-format', 'parseable',
+        return ('--output-format', 'parseable',
                 '--include-ids', 'y',
                 '--reports', 'n',
-                '--disable-msg=' + ','.join(self.operative_ignore_codes))
+                '--disable=' + ','.join(self.operative_ignore_codes))
 
 
 class PycheckerRunner(LintRunner):
