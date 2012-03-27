@@ -192,7 +192,7 @@ class PyflakesRunner(LintRunner):
 
     @property
     def stream(self):
-        return 'stderr'
+        return 'stdout'
 
     @property
     def run_flags(self):
