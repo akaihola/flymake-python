@@ -199,7 +199,7 @@ class PyflakesRunner(LintRunner):
         return ('-c',
                 ('import sys;'
                  'from pyflakes.scripts import pyflakes;'
-                 'pyflakes.main(sys.argv[1:])'))
+                 'pyflakes.main()'))
 
 
 class Pep8Runner(LintRunner):
