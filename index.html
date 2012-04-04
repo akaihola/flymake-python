@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Flymake-python : Highlight Python syntax, style and unit test errors in Emacs" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Flymake-python</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/akaihola/flymake-python">Fork Me on GitHub</a>
+
+          <h1 id="project_title">Flymake-python</h1>
+          <h2 id="project_tagline">Highlight Python syntax, style and unit test errors in Emacs</h2>
+
+          <section id="downloads">
+            <a class="zip_download_link" href="https://github.com/akaihola/flymake-python/zipball/master">Download this project as a .zip file</a>
+            <a class="tar_download_link" href="https://github.com/akaihola/flymake-python/tarball/master">Download this project as a tar.gz file</a>
+          </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>flymake-python: highlight Python syntax, style and unit test errors in</h1>
+
+<p>Emacs</p>
+
+<p>This project includes tools for enabling Emacs to run external Python
+lint and unit testing tools in the background while editing and
+highlighting the results in the source code.</p>
+
+<h2>Features</h2>
+
+<p>The following external tools are supported:</p>
+
+<ul>
+<li>  pep8.py</li>
+<li>  PyChecker</li>
+<li>  PyLint</li>
+<li>  PyFlakes</li>
+<li>  nose</li>
+</ul><p>Python virtual environments are supported, but this is largely untested.</p>
+
+<h2>Components</h2>
+
+<p><code>pyflymake.py</code>:
+  ~ a script which runs external tools according to user's configuration
+    and parses the output for <code>flymake.el</code>. The script is based on code
+    copied from the Emacs Wiki on 2010-02-25. The original author is
+    unknown.</p>
+
+<p><code>flymake.el</code>:
+  ~ a modified version of Pavel Kabyakov's <code>flymake.el</code> 0.3 which adds
+    support for</p>
+
+<pre><code>-   the 'info' message type in addition to 'error' and 'warning'
+-   passing the reason for running to external tools
+</code></pre>
+
+<p><code>.emacs</code> customization:
+  ~ in addition, a snippet of Emacs Lisp is needed in your <code>~/.emacs</code>
+    file</p>
+
+<h2>Installation</h2>
+
+<h3>Prerequisites</h3>
+
+<p>Install or make sure you have installed:</p>
+
+<ul>
+<li>  Emacs (tested on 23.1.50.1)</li>
+<li>  Python (tested on 2.6.4)</li>
+<li>
+<p>the following Python packages:</p>
+
+<ul>
+<li>  pep8</li>
+<li>  pychecker</li>
+<li>  pylint</li>
+<li>  nose</li>
+<li>  nose_machineout (from
+<a href="http://bitbucket.org/akaihola/nose_machineout/">http://bitbucket.org/akaihola/nose_machineout/)</a>)</li>
+</ul>
+</li>
+</ul><h3>Files to install</h3>
+
+<p>Make sure that <code>pep8</code>, <code>pylint</code> and <code>pychecker</code> are in your $PATH.</p>
+
+<p>Choose a directory for <code>pyflymake.py</code> (e.g. <code>~/.emacs.d/</code>) and copy it
+there. Make sure the script is set as executable.</p>
+
+<p>Copy the provided version of <code>flymake.el</code> in a directory which is in the
+Emacs <code>load-path</code>. If another version of flymake is installed, make sure
+this directory precedes it. Example: copy to <code>~/.emacs.d/flymake.el</code> and
+add this to your <code>~/.emacs</code> <a>file::</a></p>
+<blockquote>
+<p>(add-to-list 'load-path "\~/.emacs.d")</p>
+</blockquote>
+<h3>Emacs configuration</h3>
+
+<p>Add to your <code>~/.emacs</code> file (customize paths if necessary):</p>
+
+<pre><code>(add-to-list 'load-path "~/.emacs.d") ;; check path
+
+(when (load "flymake" t)
+  (defun flymake-pylint-init ()
+    (let* ((temp-file (flymake-init-create-temp-buffer-copy
+                       'flymake-create-temp-inplace))
+           (local-file (file-relative-name
+                        temp-file
+                        (file-name-directory buffer-file-name))))
+      (list "~/.emacs.d/pyflymake.py" (list local-file))))
+  ;;     check path
+
+  (add-to-list 'flymake-allowed-file-name-masks
+       '("\\.py\\'" flymake-pylint-init)))
+</code></pre>
+
+<p>If you'd like flymake to be activated automatically, add the following
+to <code>~/.emacs</code> as well:</p>
+
+<pre><code>(add-hook 'find-file-hook 'flymake-find-file-hook)
+</code></pre>
+
+<h2>Configuration</h2>
+
+<p>By default, <code>pyflymake.py</code> only runs PyLint, Pep8 and PyFlakes.
+PyChecker and unit test runners can be enabled in the configuration.</p>
+
+<p>To find the configuration, <code>pyflymake.py</code> looks for <code>.pyflymakerc</code> in
+the same directory as the file being checked. If it isn't found, parent
+directories are checked up until the root directory. If no configuration
+file is found, the default configuration is used.</p>
+
+<p>The <code>.pyflymakerc</code> configuration file is imported by <code>pyflymake.py</code> as a
+Python module. The <code>TRIGGER_TYPE</code> global variable is set and contains a
+string indicating the reason why flymake is running the checks.</p>
+
+<h3>List of configuration options</h3>
+
+<p><code>VIRTUALENV</code> (default: <code>None</code>)
+  ~ the Python virtual environment to use when running check tools</p>
+
+<p><code>TEST_RUNNER_COMMAND</code> (default: <code>None</code>)
+  ~ the unit test runner command or <code>None</code> if no unit tests should be
+    run</p>
+
+<p><code>TEST_RUNNER_FLAGS</code> (default: <code>[]</code>)
+  ~ the list of command line arguments for the unit test runner</p>
+
+<p><code>TEST_RUNNER_OUTPUT</code> (default: <code>'stderr'</code>)
+  ~ the device on which messages are output by the test runner</p>
+
+<p><code>ENV</code> (default: <code>{}</code>)
+  ~ additional environment variables when running check tools</p>
+
+<p><code>PYLINT</code> (default: <code>True</code>)
+  ~ enable PyLint</p>
+
+<p><code>PYCHECKER</code> (default: <code>False</code>)
+  ~ enable PyChecker</p>
+
+<p><code>PEP8</code> (default: <code>True</code>)
+  ~ enable Pep8</p>
+
+<p><code>PYFLAKES</code> (default: <code>True</code>)
+  ~ enable PyFlakes</p>
+
+<p><code>IGNORE_CODES</code> (default: <code>(</code>))
+  ~ error codes to ignore (in addition to sane defaults)</p>
+
+<p><code>USE_SANE_DEFAULTS</code> (default: <code>True</code>)
+  ~ ignore the following error codes in PyLint:</p>
+
+<pre><code>-   `C0103` Naming convention
+-   `C0111` Missing Docstring
+-   `E1002` Use super on old-style class
+-   `W0232` No `__init__`
+-   `R0904` Too many public methods
+-   `R0903` Too few public methods
+-   `R0201` Method could be a function
+</code></pre>
+
+<h3>Enabling a unit test runner</h3>
+
+<p>In the root of a source tree in which you want pyflymake to run tests,
+create the file <code>.pyflymakerc</code> with the following content:</p>
+
+<pre><code># to run external tools in a virtualenv:
+VIRTUALENV = '/home/me/.virtualenvs/thevirtualenv'
+
+# to run unit tests with nose:
+TEST_RUNNER_COMMAND = 'nosetests'
+TEST_RUNNER_FLAGS = [
+    '--verbosity=0',
+    '--with-machineout',
+    '--machine-output']
+
+# to enable additional checks:
+PYCHECKER = True
+</code></pre>
+
+<p>You can use different test runners, too, provided that their output is
+similar to nose_machineout's. For example, Django's test runner could
+be used if django-nose is installed:</p>
+
+<pre><code>TEST_RUNNER_COMMAND = '/home/me/project/manage.py'
+TEST_RUNNER_FLAGS = [
+    'test',
+    '--settings=test_settings',
+    '--failfast',
+    '--verbosity=0',
+    '--with-machineout',
+    '--machine-output']
+</code></pre>
+
+<h3>Trigger type specific configuration</h3>
+
+<p>You can specify custom configurations depending on why the checks are
+being run. Different triggers for <code>flymake.el</code> to run the checks are:</p>
+
+<ul>
+<li>  <code>open</code>: <code>flymake.el</code> was activated for the buffer</li>
+<li>  <code>edit</code>: the buffer was edited more than .5 seconds ago</li>
+<li>  <code>save</code>: the buffer was saved</li>
+<li>  <code>force</code>: <code>M-x flymake-start-syntax-check</code> was executed manually</li>
+</ul><p>Here's an example configuration:</p>
+
+<pre><code># run unit tests only when checks are forced or buffer saved
+if TRIGGER_TYPE in ('save', 'force'):
+    TEST_RUNNER_COMMAND = 'nosetests'
+    TEST_RUNNER_FLAGS = [
+        '--verbosity=0',
+        '--with-machineout',
+        '--machine-output']
+
+# run unit tests only up to the first failure when buffer is saved
+if TRIGGER_TYPE == 'save':
+    TEST_RUNNER_FLAGS.append('-x')
+
+# run PyLint on open, save and forced-checks
+PYLINT = TRIGGER_TYPE != 'edit'
+
+# don't ignore any messages when a check was forced
+if TRIGGER_TYPE == 'force':
+    USE_SANE_DEFAULTS = False
+    IGNORE_CODES = ()
+</code></pre>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Flymake-python maintained by <a href="https://github.com/akaihola">akaihola</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
