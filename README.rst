@@ -99,6 +99,8 @@ If you'd like flymake to be activated automatically, add the following to
 
     (add-hook 'find-file-hook 'flymake-find-file-hook)
 
+See the ``flymake-customizations.el`` file for a more advanced set of
+customizations and keybindings.
 
 Configuration
 =============
