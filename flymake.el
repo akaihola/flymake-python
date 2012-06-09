@@ -272,7 +272,7 @@ are the string substitutions (see `format')."
   '(("\\.c\\'" flymake-simple-make-init)
     ("\\.cpp\\'" flymake-simple-make-init)
     ("\\.xml\\'" flymake-xml-init)
-    ("\\.html?\\'" flymake-xml-init)
+    ("\\.html?\\'" flymake-html-init)
     ("\\.cs\\'" flymake-simple-make-init)
     ("\\.p[ml]\\'" flymake-perl-init)
     ("\\.php[345]?\\'" flymake-php-init)
@@ -643,7 +643,7 @@ It's flymake process filter."
 	    (flymake-report-status "" "")	; PASSED
 	  (if (not flymake-check-was-interrupted)
 	      (flymake-report-fatal-status "CFGERR"
-					   (format "Configuration error has occured while running %s" command))
+					   (format "Configuration error has occured while running %s, exit-status %s" command exit-status))
 	    (flymake-report-status nil ""))) ; "STOPPED"
       (flymake-report-status (format "%d/%d" err-count warn-count) ""))))
 
@@ -928,7 +928,9 @@ Convert it to flymake internal format."
      ;; LaTeX warnings (fileless) ("\\(LaTeX \\(Warning\\|Error\\): .*\\) on input line \\([0-9]+\\)" 20 3 nil 1)
      ;; ant/javac
      (" *\\(\\[javac\\] *\\)?\\(\\([a-zA-Z]:\\)?[^:(\t\n]+\\)\:\\([0-9]+\\)\:[ \t\n]*\\(.+\\)"
-      2 4 nil 5))
+      2 4 nil 5)
+     ;; HTML Tidy
+     ("^line \\([0-9]+\\) column \\([0-9]+\\) - \\(.+\\)" nil 1 2 3))
    ;; compilation-error-regexp-alist)
    (flymake-reformat-err-line-patterns-from-compile-el compilation-error-regexp-alist-alist))
   "Patterns for matching error/warning lines.  Each pattern has the form
@@ -1776,7 +1778,11 @@ Use CREATE-TEMP-F for creating temp copy."
 
 ;;;; xml-specific init-cleanup routines
 (defun flymake-xml-init ()
-  (list "xmlstarlet" (list "val" (flymake-init-create-temp-buffer-copy 'flymake-create-temp-inplace))))
+  (list "xmlstarlet" (list "val" "-e" (flymake-init-create-temp-buffer-copy 'flymake-create-temp-inplace))))
+
+;;;; html-specific init-cleanup routines
+(defun flymake-html-init ()
+  (list "tidy" (list "-q" "-o" "/dev/null" (flymake-init-create-temp-buffer-copy 'flymake-create-temp-inplace))))
 
 (provide 'flymake)
 
