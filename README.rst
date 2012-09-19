@@ -152,8 +152,20 @@ List of configuration options
 ``IGNORE_CODES`` (default: ``(``))
     error codes to ignore (in addition to sane defaults)
 
+``IGNORE_CODES_PYLINT`` (default: ``(``))
+    error codes to ignore in PyLint
+
+``IGNORE_CODES_PYCHECKER`` (default: ``(``))
+    error codes to ignore in PyChecker
+
+``IGNORE_CODES_PEP8`` (default: ``(``))
+    error codes to ignore in Pep8
+
+``IGNORE_CODES_PYFLAKES`` (default: ``(``))
+    error codes to ignore in PyFlakes
+
 ``USE_SANE_DEFAULTS`` (default: ``True``)
-    ignore the following error codes in PyLint: 
+    ignore the following error codes in PyLint:
 
     * ``C0103`` Naming convention
     * ``C0111`` Missing Docstring
@@ -220,7 +232,7 @@ Here's an example configuration::
     # run unit tests only up to the first failure when buffer is saved
     if TRIGGER_TYPE == 'save':
         TEST_RUNNER_FLAGS.append('-x')
-        
+
     # run PyLint on open, save and forced-checks
     PYLINT = TRIGGER_TYPE != 'edit'
 

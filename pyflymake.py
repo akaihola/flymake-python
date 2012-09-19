@@ -19,6 +19,7 @@ class LintRunner(object):
     command = None
     output_matcher = None
 
+    custom_ignore_codes = None
     #flymake: ("\\(.*\\) at \\([^ \n]+\\) line \\([0-9]+\\)[,.\n]" 2 3 nil 1)
     #or in non-retardate: r'(.*) at ([^ \n]) line ([0-9])[,.\n]'
     output_format = ("%(level)s %(tool)s/%(error_type)s%(error_number)s:"
@@ -38,10 +39,12 @@ class LintRunner(object):
 
     @property
     def operative_ignore_codes(self):
+        ignore_codes = self.config.IGNORE_CODES
+        ignore_codes |= set(getattr(self.config, self.custom_ignore_codes))
         if self.config.USE_SANE_DEFAULTS:
-            return self.config.IGNORE_CODES ^ self.sane_default_ignore_codes
+            return ignore_codes ^ self.sane_default_ignore_codes
         else:
-            return self.config.IGNORE_CODES
+            return ignore_codes
 
     @property
     def run_flags(self):
@@ -124,6 +127,8 @@ class PylintRunner(LintRunner):
 
     fixup_map = {'E': 'error', 'C': 'info', None: 'warning'}
 
+    custom_ignore_codes = 'IGNORE_CODES_PYLINT'
+
     @staticmethod
     def fixup_data(data):
         fixup_map = PylintRunner.fixup_map
@@ -154,6 +159,8 @@ class PycheckerRunner(LintRunner):
         r'(?P<line_number>\d+):'
         r'\s+(?P<description>.*)$')
 
+    custom_ignore_codes = 'IGNORE_CODES_PYCHECKER'
+
     @staticmethod
     def fixup_data(data):
         #XXX: doesn't seem to give the level
@@ -179,6 +186,8 @@ class PyflakesRunner(LintRunner):
         r'(?P<filename>.+):'
         r'(?P<line_number>\d+):'
         r'\s+(?P<description>.*)$')
+
+    custom_ignore_codes = 'IGNORE_CODES_PYFLAKES'
 
     @staticmethod
     def fixup_data(data):
@@ -213,6 +222,8 @@ class Pep8Runner(LintRunner):
     #     'RW29', 'W391',
     #     'W291', 'WO232'])
 
+    custom_ignore_codes = 'IGNORE_CODES_PEP8'
+
     output_matcher = re.compile(
         r'(?P<filename>.+):'
         r'(?P<line_number>[^:]+):'
@@ -231,7 +242,7 @@ class Pep8Runner(LintRunner):
 
     @property
     def run_flags(self):
-        return '--repeat', '--ignore=' + ','.join(self.config.IGNORE_CODES)
+        return '--repeat', '--ignore=' + ','.join(self.operative_ignore_codes)
 
 
 class TestRunner(LintRunner):
@@ -304,6 +315,10 @@ DEFAULT_CONFIG = dict(
     PEP8=True,
     PYFLAKES=True,
     IGNORE_CODES=(),
+    IGNORE_CODES_PEP8=(),
+    IGNORE_CODES_PYCHECKER=(),
+    IGNORE_CODES_PYFLAKES=(),
+    IGNORE_CODES_PYLINT=(),
     USE_SANE_DEFAULTS=True)
 
 
