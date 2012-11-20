@@ -82,7 +82,11 @@ class LintRunner(object):
 
         env = dict(os.environ, **self.env)
         logging.debug(' '.join(cmdline))
-        process = Popen(cmdline, stdout=PIPE, stderr=PIPE, env=env)
+        try:
+            process = Popen(cmdline, stdout=PIPE, stderr=PIPE, env=env)
+        except OSError, exc:
+            raise OSError('failed to run command %s (%s)' % (
+                    cmdline, exc))
 
         for line in getattr(process, self.stream):
             self.process_output(line)
