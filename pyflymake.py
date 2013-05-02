@@ -113,8 +113,6 @@ class PylintRunner(LintRunner):
         r'\s*\[(?P<error_type>[WECR])(?P<error_number>[^\]]+)]'
         r'\s*(?P<description>.*)$')
 
-    command = 'pylint'
-
     sane_default_ignore_codes = set([
         "C0103",  # Naming convention
         "C0111",  # Missing Docstring
@@ -132,6 +130,10 @@ class PylintRunner(LintRunner):
     fixup_map = {'E': 'error', 'C': 'info', None: 'warning'}
 
     custom_ignore_codes = 'IGNORE_CODES_PYLINT'
+
+    def __init__(self, *args, **kwargs):
+        super(PylintRunner, self).__init__(*args, **kwargs)
+        self.command = self.config.PYLINT_COMMAND
 
     @staticmethod
     def fixup_data(data):
@@ -315,6 +317,7 @@ DEFAULT_CONFIG = dict(
     TEST_RUNNER_OUTPUT='stderr',
     ENV={},
     PYLINT=True,
+    PYLINT_COMMAND='pylint',
     PYCHECKER=False,
     PEP8=True,
     PYFLAKES=True,
