@@ -143,8 +143,8 @@ class PylintRunner(LintRunner):
 
     @property
     def run_flags(self):
-        return ('--output-format', 'parseable',
-                '--include-ids', 'y',
+
+        return ('--msg-template', '{path}:{line}: [{msg_id}], {obj} {msg}',
                 '--reports', 'n',
                 '--disable=' + ','.join(self.operative_ignore_codes))
 
