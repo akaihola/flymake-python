@@ -208,10 +208,7 @@ class PyflakesRunner(LintRunner):
 
     @property
     def run_flags(self):
-        return ('-c',
-                ('import sys;'
-                 'from pyflakes.scripts import pyflakes;'
-                 'pyflakes.main()'))
+        return ()
 
 
 class Pep8Runner(LintRunner):
