@@ -240,3 +240,10 @@ Here's an example configuration::
     if TRIGGER_TYPE == 'force':
         USE_SANE_DEFAULTS = False
         IGNORE_CODES = ()
+
+Donations
+---------
+
+If you'd like to support ongoing development of this tool,
+feel free to send a Bitcoin tip to
+1Pq1Y6AJjhL3rjGYW7CNKX2vhw4yDo3qdV
