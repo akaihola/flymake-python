@@ -73,7 +73,7 @@ class LintRunner(object):
                 fixed_data['description'] = (
                     '%s...' %
                     fixed_data['description'][:MAX_DESCRIPTION_LENGTH - 3])
-            print cls.output_format % fixed_data
+            print(cls.output_format % fixed_data)
 
     def run(self, filename):
         cmdline = [self.command]
@@ -89,7 +89,7 @@ class LintRunner(object):
                     cmdline, exc))
 
         for line in getattr(process, self.stream):
-            self.process_output(line)
+            self.process_output(line.decode("utf-8"))
 
         if logging.getLogger().isEnabledFor(logging.DEBUG):
             other_stream = ('stdout', 'stderr')[self.stream == 'stdout']
