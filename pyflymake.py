@@ -186,7 +186,7 @@ class PycheckerRunner(LintRunner):
 
 
 class PyflakesRunner(LintRunner):
-    command = 'python'
+    command = 'pyflakes'
 
     output_matcher = re.compile(
         r'(?P<filename>.+):'
